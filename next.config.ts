@@ -1,9 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  async headers() {
+    return [
+      {
+        source: "/pdf.worker.min.mjs",
+        headers: [{ key: "Content-Type", value: "text/javascript" }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
