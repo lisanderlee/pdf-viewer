@@ -1,8 +1,8 @@
-import { createRequire } from "node:module";
 import path from "node:path";
 
-const require = createRequire(import.meta.url);
-const standardFontDataUrl = `${path.join(path.dirname(require.resolve("pdfjs-dist/package.json")), "standard_fonts")}${path.sep}`;
+function standardFontDataUrl() {
+  return `${path.join(process.cwd(), "node_modules", "pdfjs-dist", "standard_fonts")}${path.sep}`;
+}
 
 export type DeckPage = {
   pageNumber: number;
@@ -20,7 +20,7 @@ export async function extractDeckPages(bytes: Uint8Array): Promise<DeckPage[]> {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   const task = pdfjs.getDocument({
     data: bytes,
-    standardFontDataUrl,
+    standardFontDataUrl: standardFontDataUrl(),
     useSystemFonts: false,
   });
 
