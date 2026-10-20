@@ -1,6 +1,6 @@
 "use client";
 
-import { upload } from "@vercel/blob/client";
+import { uploadPresigned } from "@vercel/blob/client";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { MAX_PDF_BYTES, PDF_PATHNAME } from "@/lib/pdf";
@@ -45,7 +45,7 @@ export function UploadForm() {
         return;
       }
 
-      await upload(PDF_PATHNAME, file, {
+      await uploadPresigned(PDF_PATHNAME, file, {
         access: "public",
         handleUploadUrl: "/api/upload",
         clientPayload: password,
@@ -61,7 +61,7 @@ export function UploadForm() {
       const message =
         uploadError instanceof Error ? uploadError.message : "Upload failed.";
       setError(
-        message.includes("client token")
+        message.includes("presigned URL") || message.includes("client token")
           ? "Upload failed. Check that blob storage is configured."
           : message,
       );
