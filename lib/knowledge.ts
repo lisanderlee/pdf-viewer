@@ -46,13 +46,19 @@ export async function loadKnowledgeForChat(): Promise<KnowledgeLookup> {
 
 async function readStoredKnowledge(): Promise<DeckKnowledge | null> {
   try {
-    const result = await get(KNOWLEDGE_PATHNAME, { access: "private", useCache: false });
+    const result = await get(KNOWLEDGE_PATHNAME, { access: "private" });
     if (!result || result.statusCode !== 200 || !result.stream) return null;
     return parseKnowledge(await new Response(result.stream).text());
   } catch (error) {
-    if (error instanceof BlobNotFoundError) return null;
+    if (isMissingKnowledge(error)) return null;
     throw error;
   }
+}
+
+function isMissingKnowledge(error: unknown): boolean {
+  if (error instanceof BlobNotFoundError) return true;
+  if (!(error instanceof Error)) return false;
+  return error.message.includes("Failed to fetch blob: 400") || error.message.includes("404");
 }
 
 function parseKnowledge(raw: string): DeckKnowledge | null {
