@@ -22,7 +22,7 @@ export async function indexCurrentPdf(): Promise<void> {
   const pages = await extractDeckPages(new Uint8Array(await response.arrayBuffer()));
   const knowledge: DeckKnowledge = { sourceEtag: blob.etag, pages };
   await put(KNOWLEDGE_PATHNAME, JSON.stringify(knowledge), {
-    access: "private",
+    access: "public",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
@@ -46,7 +46,7 @@ export async function loadKnowledgeForChat(): Promise<KnowledgeLookup> {
 
 async function readStoredKnowledge(): Promise<DeckKnowledge | null> {
   try {
-    const result = await get(KNOWLEDGE_PATHNAME, { access: "private" });
+    const result = await get(KNOWLEDGE_PATHNAME, { access: "public" });
     if (!result || result.statusCode !== 200 || !result.stream) return null;
     return parseKnowledge(await new Response(result.stream).text());
   } catch (error) {
