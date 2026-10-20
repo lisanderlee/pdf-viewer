@@ -16,6 +16,7 @@ body {
 
 html {
   height: 100%;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -51,6 +52,124 @@ a {
 
 .pdf-stage {
   width: 100%;
+}
+
+.pdf-stage.has-nav {
+  padding-top: 48px;
+}
+
+.pdf-nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 12px;
+  background: rgb(255 255 255 / 0.94);
+  border-bottom: 1px solid #ececec;
+  backdrop-filter: blur(10px);
+}
+
+.pdf-nav-toggle {
+  display: none;
+  border: 0;
+  padding: 8px 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pdf-nav-list,
+.pdf-nav-sub {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdf-nav-list {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pdf-nav-list > li {
+  position: relative;
+}
+
+.pdf-nav a {
+  display: block;
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pdf-nav a[aria-current="true"] {
+  color: var(--foreground);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--foreground);
+}
+
+.pdf-nav-sub {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #ececec;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.06);
+}
+
+.pdf-nav-list > li:hover > .pdf-nav-sub,
+.pdf-nav-list > li:focus-within > .pdf-nav-sub {
+  display: block;
+}
+
+.pdf-nav-sub a[aria-current="true"] {
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .pdf-nav-toggle {
+    display: inline-flex;
+  }
+
+  .pdf-nav-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    flex-direction: column;
+    max-height: 70vh;
+    padding: 8px;
+    background: #fff;
+    border-bottom: 1px solid #ececec;
+    overflow: auto;
+  }
+
+  .pdf-nav-list.open {
+    display: flex;
+  }
+
+  .pdf-nav-sub {
+    display: block;
+    position: static;
+    min-width: 0;
+    padding: 0 0 0 12px;
+    border: 0;
+    box-shadow: none;
+  }
 }
 
 .pdf-page {
