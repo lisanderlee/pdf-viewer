@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { ChatPanel } from "@/components/chat-panel";
 import { PdfViewer } from "@/components/pdf-viewer";
 import { StatusMessage } from "@/components/status-message";
 import { getCurrentPdf } from "@/lib/current-pdf";
@@ -17,5 +18,10 @@ async function CurrentDocument() {
     return <StatusMessage message="No PDF has been uploaded yet." />;
   }
 
-  return <PdfViewer key={pdf.src} src={pdf.src} />;
+  return (
+    <>
+      <PdfViewer key={pdf.src} src={pdf.src} />
+      <ChatPanel />
+    </>
+  );
 }

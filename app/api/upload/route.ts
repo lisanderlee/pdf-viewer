@@ -4,6 +4,7 @@ import {
   type HandleUploadPresignedBody,
 } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
+import { indexCurrentPdf } from "@/lib/knowledge";
 import { isUploadAuthorized } from "@/lib/password";
 import { MAX_PDF_BYTES, PDF_PATHNAME } from "@/lib/pdf";
 
@@ -63,6 +64,10 @@ export async function POST(request: Request) {
           token,
           urlOptions: { ...uploadConstraints },
         };
+      },
+      onUploadCompleted: async ({ blob }) => {
+        if (blob.pathname !== PDF_PATHNAME) return;
+        await indexCurrentPdf();
       },
     });
 

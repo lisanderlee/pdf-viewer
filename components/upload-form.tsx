@@ -11,11 +11,14 @@ export function UploadForm() {
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [reading, setReading] = useState(false);
+  const [readError, setReadError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setReadError(null);
     setDone(false);
 
     if (!file) {
@@ -57,6 +60,21 @@ export function UploadForm() {
       });
       setProgress(100);
       setDone(true);
+      setReading(true);
+      try {
+        const indexed = await fetch("/api/index", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
+        if (!indexed.ok) {
+          setReadError("The file is updated, but the chat could not read it yet.");
+        }
+      } catch {
+        setReadError("The file is updated, but the chat could not read it yet.");
+      } finally {
+        setReading(false);
+      }
     } catch (uploadError) {
       const message =
         uploadError instanceof Error ? uploadError.message : "Upload failed.";
@@ -85,7 +103,7 @@ export function UploadForm() {
           autoComplete="current-password"
           value={password}
           required
-          disabled={pending}
+          disabled={pending || reading}
           onChange={(event) => setPassword(event.target.value)}
         />
       </label>
@@ -97,12 +115,12 @@ export function UploadForm() {
           name="file"
           accept="application/pdf,.pdf"
           required
-          disabled={pending}
+          disabled={pending || reading}
           onChange={(event) => setFile(event.target.files?.[0] ?? null)}
         />
       </label>
 
-      <button type="submit" disabled={pending}>
+      <button type="submit" disabled={pending || reading}>
         {pending ? "Uploading…" : "Upload"}
       </button>
 
@@ -127,7 +145,19 @@ export function UploadForm() {
         </p>
       ) : null}
 
-      {done ? (
+      {reading ? (
+        <p className="upload-success" role="status">
+          Reading the new deck…
+        </p>
+      ) : null}
+
+      {readError ? (
+        <p className="upload-error" role="alert">
+          {readError}
+        </p>
+      ) : null}
+
+      {done && !reading && !readError ? (
         <p className="upload-success" role="status">
           PDF updated. It can take up to a minute to replace the previous file.{" "}
           <Link href="/">Open the document</Link>
