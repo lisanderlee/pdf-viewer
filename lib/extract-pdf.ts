@@ -1,7 +1,12 @@
 import path from "node:path";
+import { pathToFileURL } from "node:url";
+
+function pdfjsFile(...parts: string[]) {
+  return path.join(process.cwd(), "node_modules", "pdfjs-dist", ...parts);
+}
 
 function standardFontDataUrl() {
-  return `${path.join(process.cwd(), "node_modules", "pdfjs-dist", "standard_fonts")}${path.sep}`;
+  return `${pdfjsFile("standard_fonts")}${path.sep}`;
 }
 
 export type DeckPage = {
@@ -18,6 +23,9 @@ const TEXT_BUDGET = 80_000;
 
 export async function extractDeckPages(bytes: Uint8Array): Promise<DeckPage[]> {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  pdfjs.GlobalWorkerOptions.workerSrc = pathToFileURL(
+    pdfjsFile("legacy", "build", "pdf.worker.mjs"),
+  ).href;
   const task = pdfjs.getDocument({
     data: bytes,
     standardFontDataUrl: standardFontDataUrl(),

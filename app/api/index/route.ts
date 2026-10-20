@@ -23,7 +23,8 @@ export async function POST(request: Request) {
   try {
     await indexCurrentPdf();
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "The deck could not be read." },
       { status: 500 },
